@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from 'react'
+import { useReducer, useEffect, useState, useRef } from 'react'
 import { useContador } from './hooks/useContador'
 import Interval from './components/Interval'
 import './App.css'
@@ -20,6 +20,8 @@ const reducer = (state, action) => {
   if(action.type === 'set') {
     return { contador: action.payload }
   }
+
+  return state
 }
 
 function App() {
@@ -29,6 +31,20 @@ function App() {
   }, [ contador ])
 
   const [ state, dispatch ] = useReducer(reducer, inicial)
+  const [ valor, setValor ] = useState(0)
+
+  const divRef = useRef()
+
+  const clickRandomdiv = () => {
+    const current = divRef.current
+
+    current.innerHTML = `Este es el alto del componente actual ${current.clientHeight}`
+  }
+
+  const inputRef = useRef()
+  const foco = () => {
+    inputRef.current.focus()
+  }
 
   return (
     <div className="card">
@@ -36,9 +52,21 @@ function App() {
         Contador {contador}
       </button>
       <div>
-        <span>Contador Reduce {state.contador}</span>
-        <button onClick={() => dispatch({ type: 'incrementar' })} >mas</button>
-        <button>menos</button>
+        <div>
+          <span>Contador Reduce {state.contador}</span>
+          <input value={valor} onChange={e => setValor(e.target.value)}/>
+          <button onClick={() => dispatch({ type: 'decrementar' })}>menos</button>
+          <button onClick={() => dispatch({ type: 'incrementar' })} >mas</button>
+          <button onClick={() => dispatch({ type: 'set', payload: valor })}>Setear en {valor}</button>
+        </div>
+        
+        <div>
+          <button  onClick={foco} >enfocar al input</button>
+          <input ref={inputRef} type="text" />
+          <div className='reference-test' onClick={clickRandomdiv} ref={divRef}>
+            hola
+          </div>
+        </div>
       </div>
       <Interval contador={contador}></Interval>
     </div>
